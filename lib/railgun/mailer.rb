@@ -48,7 +48,7 @@ module Railgun
       Rails.logger.warn "Railgun::Mailer mail.class => #{mail.class}"
       Rails.logger.warn "Railgun::Mailer mail[:domain] => #{mail[:domain]}"
       Rails.logger.warn "Railgun::Mailer domain => #{domain}"
-      @mg_domain = mg_domain
+      @mg_domain = mg_domain(mail)
       Rails.logger.warn "Railgun::Mailer mg_domain => #{@mg_domain}"
       mail[:domain] = nil if mail[:domain].present?
       Rails.logger.warn "Railgun::Mailer mail[:domain] => #{mail[:domain]}"
@@ -67,7 +67,7 @@ module Railgun
       @mg_client
     end
 
-    def mg_domain
+    def mg_domain(mail)
       return mail[:domain] if mail[:domain].present?
       domain
     end
