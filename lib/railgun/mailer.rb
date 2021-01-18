@@ -67,11 +67,12 @@ module Railgun
       @mg_client
     end
 
+    private
+
     def mg_domain(mail)
-      return mail[:domain] if mail[:domain].present?
+      return mail[:domain].value if mail[:domain]&.value&.present?
       domain
     end
-
   end
 
   module_function
