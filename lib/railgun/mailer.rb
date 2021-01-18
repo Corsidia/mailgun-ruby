@@ -45,17 +45,14 @@ module Railgun
     end
 
     def deliver!(mail)
-      Rails.logger.warn "Railgun::Mailer mail.class => #{mail.class}"
-      Rails.logger.warn "Railgun::Mailer mail[:domain] => #{mail[:domain]}"
-      Rails.logger.warn "Railgun::Mailer domain => #{domain}"
-      @mg_domain = mg_domain(mail)
-      Rails.logger.warn "Railgun::Mailer mg_domain => #{@mg_domain}"
+      # Set @mg_domain from mail[:domain] header if present, then remove it to prevent being sent.
+      @mg_domain = mail[:domain]&.value || domain
       mail[:domain] = nil if mail[:domain].present?
-      Rails.logger.warn "Railgun::Mailer mail[:domain] => #{mail[:domain]}"
+
       mg_message = Railgun.transform_for_mailgun(mail)
       response = @mg_client.send_message(@mg_domain, mg_message)
 
-      if response.code == 200
+      if response.code == 200 then
         Rails.logger.warn "Railgun::Mailer response => #{response}"
         mg_id = response.to_h['id']
         mail.message_id = mg_id
@@ -65,13 +62,6 @@ module Railgun
 
     def mailgun_client
       @mg_client
-    end
-
-    private
-
-    def mg_domain(mail)
-      return mail[:domain].value if mail[:domain]&.value&.present?
-      domain
     end
   end
 
