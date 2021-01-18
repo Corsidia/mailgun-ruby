@@ -33,7 +33,7 @@ module Railgun
         config[:api_version] || 'v3',
         config[:api_ssl].nil? ? true : config[:api_ssl],
       )
-      @domain = @config[:domain]
+      @default_domain = @config[:domain]
 
       # To avoid exception in mail gem v2.6
       @settings = { return_response: true }
@@ -46,7 +46,8 @@ module Railgun
 
     def deliver!(mail)
       mg_message = Railgun.transform_for_mailgun(mail)
-      response = @mg_client.send_message(@domain, mg_message)
+      domain = mail[:domain] || @default_domain
+      response = @mg_client.send_message(domain, mg_message)
 
       if response.code == 200 then
         mg_id = response.to_h['id']
