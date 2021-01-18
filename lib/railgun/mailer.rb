@@ -45,12 +45,14 @@ module Railgun
     end
 
     def deliver!(mail)
-      byebug
+      Rails.logger.info "Railgun::Mailer mail => #{mail}"
       mg_domain = mail[:domain] || @domain
+      Rails.logger.info "Railgun::Mailer mg_domain => #{mg_domain}"
       mg_message = Railgun.transform_for_mailgun(mail)
-      response = @mg_client.send_message(mail_domain, mg_message)
+      response = @mg_client.send_message(mg_domain, mg_message)
 
-      if response.code == 200 then
+      if response.code == 200
+        Rails.logger.info "Railgun::Mailer response => #{response}"
         mg_id = response.to_h['id']
         mail.message_id = mg_id
       end
