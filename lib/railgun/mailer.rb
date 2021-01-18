@@ -45,8 +45,10 @@ module Railgun
     end
 
     def deliver!(mail)
-      Rails.logger.warn "Railgun::Mailer mail => #{mail}"
-      mg_domain = mail[:domain] || @domain
+      Rails.logger.warn "Railgun::Mailer mail.class => #{mail.class}"
+      Rails.logger.warn "Railgun::Mailer mail[:domain] => #{mail[:domain]}"
+      Rails.logger.warn "Railgun::Mailer domain => #{domain}"
+      mg_domain = mail[:domain] || domain
       Rails.logger.warn "Railgun::Mailer mg_domain => #{mg_domain}"
       mg_message = Railgun.transform_for_mailgun(mail)
       response = @mg_client.send_message(mg_domain, mg_message)
