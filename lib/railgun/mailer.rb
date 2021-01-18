@@ -48,10 +48,12 @@ module Railgun
       Rails.logger.warn "Railgun::Mailer mail.class => #{mail.class}"
       Rails.logger.warn "Railgun::Mailer mail[:domain] => #{mail[:domain]}"
       Rails.logger.warn "Railgun::Mailer domain => #{domain}"
-      mg_domain = mail[:domain] || domain
-      Rails.logger.warn "Railgun::Mailer mg_domain => #{mg_domain}"
+      @mg_domain = mg_domain
+      Rails.logger.warn "Railgun::Mailer mg_domain => #{@mg_domain}"
+      mail[:domain] = nil if mail[:domain].present?
+      Rails.logger.warn "Railgun::Mailer mail[:domain] => #{mail[:domain]}"
       mg_message = Railgun.transform_for_mailgun(mail)
-      response = @mg_client.send_message(mg_domain, mg_message)
+      response = @mg_client.send_message(@mg_domain, mg_message)
 
       if response.code == 200
         Rails.logger.warn "Railgun::Mailer response => #{response}"
@@ -63,6 +65,11 @@ module Railgun
 
     def mailgun_client
       @mg_client
+    end
+
+    def mg_domain
+      return mail[:domain] if mail[:domain].present?
+      domain
     end
 
   end
